@@ -18,7 +18,7 @@ $view_tweets = [
         'tweet_body' => 'ツイート（仮）',
         'tweet_image_name' => null,
         'tweet_created_at' => '2021-04-23 14:00:00',
-        'liked_id' => null,
+        'like_id' => null,
         'like_count' => 0,
     ],
     [
@@ -29,7 +29,7 @@ $view_tweets = [
         'tweet_body' => 'コワーキングスペースをオープンしました',
         'tweet_image_name' => 'sample-post.jpg',
         'tweet_created_at' => '2020-04-22 14:00:00',
-        'liked_id' => 1,
+        'like_id' => 1,
         'like_count' => 1,
     ]
 ];
@@ -109,6 +109,13 @@ function convertToDayTimeAge(string $datetime)
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
     <!-- Bootstrap CSSの後にStyle CSSが記述されてあるため、Bootstrap CSSを上書き変更したい場合にはStyle CSSで記述すればよい -->
     <link rel="stylesheet" href="<?php echo HOME_URL; ?>Views/css/style.css">
+    <!-- JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"　defer></script>
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous" defer></script>
+    <!-- like.js-->
+    <script src="<?php echo HOME_URL; ?>Views/js/like.js" defer></script>
+
     <title>ホーム画面 / Twitterクローン</title>
 </head>
 <body class="home">
@@ -122,7 +129,7 @@ function convertToDayTimeAge(string $datetime)
                     <li class="nav-item"><a href="nortification.php" class="nav-link"><img src="<?php echo HOME_URL; ?>Views/img/icon-notification.svg" alt=""></a></li>
                     <li class="nav-item"><a href="profile.php" class="nav-link"><img src="<?php echo HOME_URL; ?>Views/img/icon-profile.svg" alt=""></a></li>
                     <li class="nav-item"><a href="post.php" class="nav-link"><img src="<?php echo HOME_URL; ?>Views/img/icon-post-tweet-twitterblue.svg" alt="" class="post-tweet"></a></li>
-                    <li class="nav-item my-icon"><img src="<?php echo HOME_URL; ?>Views/img_uploaded/user/tsushima.png" alt=""></li>
+                    <li class="nav-item my-icon"><img src="<?php echo HOME_URL; ?>Views/img_uploaded/user/tsushima.png" alt="" class="js-popover" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="right" data-bs-content="<a href='profile.php'>プロフィール</a><br><a href='sigh-out.php'>ログアウト</a>" data-bs-html="true"></li>
                 </ul>
             </div>
         </div>
@@ -176,7 +183,7 @@ function convertToDayTimeAge(string $datetime)
                         <?php endif; ?>
                         
                         <div class="icon-list">
-                            <div class="like">
+                            <div class="like js-like" data-like-id="<?php echo htmlspecialchars($view_tweet['like_id']); ?>">
                                 <?php
                                 if (isset($view_tweet['like_id'])){
                                     //いいね!しているとき
@@ -186,39 +193,23 @@ function convertToDayTimeAge(string $datetime)
                                 }
                                 ?>
                             </div>
-                            <div class="like-count"><?php echo htmlspecialchars($view_tweet ['like_count']); ?></div>
+                            <div class="like-count js-like-count"><?php echo htmlspecialchars($view_tweet ['like_count']); ?></div>
                         </div>
                     </div>
                 </div>
                 <?php endforeach; ?>
-
-                <div class="tweet">
-                    <div class="user">
-                        <a href="profile.php?user_id=1">
-                            <img src="<?php echo HOME_URL; ?>Views/img_uploaded/user/sample-person.jpg" alt="">
-                        </a>
-                    </div>
-                    <div class="content">
-                        <div class="name">
-                            <a href="profile.php?user_id=1">
-                                <span class="nickname">ケン</span>
-                                <span class="user-name">@ken0023 ・24日前</span>
-                            </a>
-                        </div>
-                        <p>コワーキングスペースオープンしました！。</p>
-                        <img src="<?php echo HOME_URL; ?>Views/img_uploaded/tweet/sample-post.jpg" alt="" class="post-image">
-                        <div class="icon-list">
-                            <div class="like">
-                                <img src="<?php echo HOME_URL; ?>Views/img/icon-heart-twitterblue.svg" alt="">
-                            </div>
-                            <div class="like-count">25</div>
-                        </div>
-                    </div>
-                </div>
             </div>
-<?php endif;?>
+            <?php endif;?>
             </div>
         </div>
     </div>
+    <!-- JSはbody閉じタグの前に置くことでサイトの読み込み高速化 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            $('.js-popover').popover({
+                container: 'body'
+            })
+        }, false);
+    </script>
 </body>
 </html>
